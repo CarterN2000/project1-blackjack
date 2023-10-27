@@ -1,0 +1,37 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: rgb(161, 220, 168);
+}
+
+#dealer-cards {
+    height: 250px;
+    border: 1px solid blue;
+    margin-top: 15px;
+}
+#player-cards {
+    height: 250px;
+    border: 1px solid blue;
+}
+#player-choices{
+    height: 100px;
+    border: 1px solid blue;
+    align-items: center;
+    display: flex;
+    justify-content: space-around;
+}
+.choice {
+    height: 75px;
+    width: 100px;
+    font-size: large;
+    border: 2px solid rgb(98, 21, 133);
+    border-radius: 10px;
+}
+#stats-list {
+    min-height: 150px;
+    border: 1px solid blue;
+    padding: 10px;
+
+}

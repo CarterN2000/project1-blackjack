@@ -3,11 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Blackjack</title>
     <link rel="stylesheet" href="main.css">
     <script defer src="app.js"></script>
 </head>
 <body>
+    <header>
+       <h1 class="header-title"> Welcome to Blackjack</h1>
+       <input type="text" placeholder="Your name">
+       <input type="text" placeholder="Deposit Amount">
+    </header>
+    <main>
+        <section id="dealer-cards">DEALER CARDS APPEAR HERE</section>
+        <section id="player-cards">PLAYER CARDS APPEAR HERE</section>
+        <section id="player-choices">
+            <button class="choice" id="hit">Hit</button>
+            <button class="choice" id="stand">Stand</button>
+            <button class="choice" id="double">Double Down</button>
+            <button class="choice" id="funny">Cry</button>
+        </section>
+        <section id="stats-list">
+            <p>Current Balance: <span id="balance">0</span></p>
+            <p>Wins: <span id="win-count">0</span></p>
+            <p>Loses: <span id="loss-count">0</span></p>
+            <p>Current Hand Value: <span id="hand-value">0</span></p>
+        </section>
+    </main>
     
 </body>
 </html>
