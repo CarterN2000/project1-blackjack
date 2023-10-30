@@ -15,14 +15,16 @@ const deposit = document.getElementById('deposit')
 const submitter = document.getElementById('submitter')
 const newBalance = document.getElementById('balance')
 
+const betSize = document.getElementById('bet-size')
+const placeTheBet = document.getElementById('place-bet')
 
 class Deck {
     constructor(cards) {
         this.cards = cards
     }
     shuffleCards(){
-        for (let i = this.cards.length; i > 0; i--) {
-            let newIndex = math.Floor(Math.random() * i)
+        for (let i = this.cards.length - 1; i > 0; i--) {
+            let newIndex = Math.floor(Math.random() * (i + 1))
             let oldValue = this.cards[newIndex]
             this.cards[newIndex] = this.cards[i]
             this.cards[i] = oldValue
@@ -43,6 +45,7 @@ class Card {
 // I will keep booleans here (wonHand, affordBet, showDealerCard, isBust, isBlackJack, etc)
 let balance = 0
 let betAmount;
+let canGoBroke = false
 
 
 /*----- cached elements  -----*/
@@ -52,9 +55,7 @@ let betAmount;
 
 /*----- event listeners -----*/
 
-//  Listen for player choices and respond accoringly
-// This could include bet amount, hit/stand/doubledown, or quit game
-
+// this event listener updates the player's balance when money is deposited
 submitter.addEventListener('click', function(){
     let balanceUpdater = deposit.value
     if(!isNaN(deposit.value)) {
@@ -68,6 +69,31 @@ submitter.addEventListener('click', function(){
 })
 
 
+/*----- MAIN GAMEPLAY -> MAIN FUNCTION THAT PUTS TOGETHER ALL SUB-FUNCTIONS AND RUNS THE ENTIRE GAME -----*/
+
+function playBlackJack() {
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*----- functions -----*/
 
 // function in charge or making a deck of cards and shuffling them
@@ -78,7 +104,7 @@ function makeDeck(){
         })
     })
 }
-
+// This is the function used to render a card from the deck onto the screen
 function renderCard(card) {
     const newCard = document.createElement('div')
     newCard.innerText = `${card.value}${card.suit}`
@@ -89,14 +115,47 @@ function renderCard(card) {
     else {
         newCard.style.color = 'red'
     }
-
-    dealerSection.appendChild(newCard)
+    return(newCard)
 }
 
 // function in charge of initializing/starting the game
-// function in charge of getting a player balance, and keeping track of balance throughout game
 
-// function in charge of asking for bet size
+function startHand() {
+    deckCreator = makeDeck()
+    currentDeck = new Deck(deckCreator)
+
+    currentDeck.shuffleCards()
+
+    const playerCardOne = currentDeck.cards.pop()
+    const dealerCardOne = currentDeck.cards.pop()
+    const playerCardTwo = currentDeck.cards.pop()
+    const dealerCardTwo = currentDeck.cards.pop()
+
+    playerSection.appendChild(renderCard(playerCardOne))
+    dealerSection.appendChild(renderCard(dealerCardOne))
+    playerSection.appendChild(renderCard(playerCardTwo))
+    dealerSection.appendChild(renderCard(dealerCardTwo)) //THIS CARD NEEDS TO BE HIDDEN
+
+    return currentDeck
+}
+
+// function in charge of placing bet
+
+function placeBet() {
+    placeTheBet.addEventListener('click', function(){
+        if(betSize.value > balance) {
+            betSize.value = ''
+            return
+        }
+        else {
+            betAmount = betSize.value
+            balance -= betAmount
+            newBalance.innerText = `${balance}`
+        }
+        betSize.value = ''
+        return betAmount, balance
+    })
+}
 // function in charge of assessing each cards numerical value
 // function in charge of assessing the player/dealer hand value, records busts and blackjacks too
 // function in charge of responding to a "hit"
@@ -107,9 +166,5 @@ function renderCard(card) {
 // There will probably be more... AGGGHHHH
 
 
-
-
-// let testCard = new Card (SUITS[0], VALUES[3])
-// renderCard(testCard)
-
-// console.log(testCard)
+startHand()
+placeBet()
