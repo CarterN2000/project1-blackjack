@@ -9,13 +9,21 @@
 </head>
 <body>
     <header>
-       <h1 class="header-title"> Welcome to Blackjack</h1>
-       <input type="text" placeholder="Your name">
-       <input type="text" placeholder="Deposit Amount">
+        <h1 class="header-title"> Welcome to Blackjack</h1>
+        <!-- <input type="text" placeholder="Your name"> -->
+        <input type="text" id="deposit" placeholder="Deposit Amount" required>
+        <input type="submit" value="Add Funds">
     </header>
     <main>
-        <section id="dealer-cards">DEALER CARDS APPEAR HERE</section>
-        <section id="player-cards">PLAYER CARDS APPEAR HERE</section>
+        <section id="dealer-cards">
+            <h4>Dealer's Cards</h4>
+            <div class="cards">9♠</div>
+        </section>
+        <section id="main-text"></section>
+        <section id="player-cards">
+            <h4>Player's Cards</h4>
+            <div class="cards">9♠</div>
+        </section>
         <section id="player-choices">
             <button class="choice" id="hit">Hit</button>
             <button class="choice" id="stand">Stand</button>
