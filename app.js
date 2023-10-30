@@ -11,6 +11,9 @@ const VALUES = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'
 const dealerSection = document.querySelector('#dealer-cards')
 const playerSection = document.querySelector('#player-cards')
 
+const deposit = document.getElementById('deposit')
+const submitter = document.getElementById('submitter')
+const newBalance = document.getElementById('balance')
 
 
 class Deck {
@@ -33,13 +36,13 @@ class Card {
         this.value = value
     }
 }
-
 /*----- state variables -----*/
 
 // Here I will need to declare a lot of variables, including all the varaibles for my stats section (wins, loses, balance, hand value)
 // I will need a timer that will autopick if the player does not make a valid choice in time
 // I will keep booleans here (wonHand, affordBet, showDealerCard, isBust, isBlackJack, etc)
 let balance = 0
+let betAmount;
 
 
 /*----- cached elements  -----*/
@@ -51,6 +54,18 @@ let balance = 0
 
 //  Listen for player choices and respond accoringly
 // This could include bet amount, hit/stand/doubledown, or quit game
+
+submitter.addEventListener('click', function(){
+    let balanceUpdater = deposit.value
+    if(!isNaN(deposit.value)) {
+        let balanceInt = parseInt(balanceUpdater)
+        if(balanceInt < 5000) {
+            balance += balanceInt
+        }
+    }
+    deposit.value = ''
+    newBalance.innerText = `${balance}`
+})
 
 
 /*----- functions -----*/
@@ -66,14 +81,15 @@ function makeDeck(){
 
 function renderCard(card) {
     const newCard = document.createElement('div')
-    newCard.innnerText = `${this.value}` + `${this.suit}`
+    newCard.innerText = `${card.value}${card.suit}`
     newCard.classList.add('cards')
-    if(this.suit === "♠"|| this.suit === "♣") {
-        newCard.style.color === 'black'
+    if (card.suit === "♠" || card.suit === "♣"){
+        newCard.style.color = 'black'
     }
-    else{
-        newCard.style.color === 'red'
+    else {
+        newCard.style.color = 'red'
     }
+
     dealerSection.appendChild(newCard)
 }
 
@@ -90,3 +106,10 @@ function renderCard(card) {
 // function to quit/reset
 // There will probably be more... AGGGHHHH
 
+
+
+
+// let testCard = new Card (SUITS[0], VALUES[3])
+// renderCard(testCard)
+
+// console.log(testCard)
