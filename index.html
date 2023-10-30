@@ -20,7 +20,9 @@
             <h4>Dealer's Cards</h4>
             <!-- <div class="cards">9♠</div> -->
         </section>
-        <section id="main-text"></section>
+        <section id="main-text">
+            <h2>Current Bet: <span id="bet-amount"></span></h2>
+        </section>
         <section id="player-cards">
             <h4>Player's Cards</h4>
             <!-- <div class="cards">9♠</div> -->
@@ -33,9 +35,10 @@
         </section>
         <section id="stats-list">
             <p>Current Balance: <span id="balance">0</span></p>
-            <p>Current Hand Value: <span id="hand-value">0</span></p>
-            <p>Wins: <span id="win-count">0</span></p>
-            <p>Loses: <span id="loss-count">0</span></p>
+            <p>Player Hand Value: <span id="hand-value">0</span></p>
+            <p>Dealer Hand Value: <span id="dealer-value">0</span></p>
+            <!-- <p>Wins: <span id="win-count">0</span></p>
+            <p>Loses: <span id="loss-count">0</span></p> -->
             <input type="number" id="bet-size" placeholder="BET AMOUNT">
             <input type="submit" id="place-bet" value="PLACE BET">
         </section>

@@ -15,8 +15,12 @@ const deposit = document.getElementById('deposit')
 const submitter = document.getElementById('submitter')
 const newBalance = document.getElementById('balance')
 
-const betSize = document.getElementById('bet-size')
+const betSizeInput = document.getElementById('bet-size')
 const placeTheBet = document.getElementById('place-bet')
+const betAmountEl = document.getElementById('bet-amount')
+
+const playerHandScore = document.getElementById('hand-value')
+const dealerHandScore = document.getElementById('dealer-value')
 
 class Deck {
     constructor(cards) {
@@ -46,6 +50,21 @@ class Card {
 let balance = 0
 let betAmount;
 let canGoBroke = false
+let currentHandValue = 0
+let dealerHandValue = 0
+let playerHasBlackJack = false
+let dealerHasBlackJack = false
+
+const deckCreator = makeDeck()
+const currentDeck = new Deck(deckCreator)
+
+currentDeck.shuffleCards()
+
+const playerCardOne = currentDeck.cards.pop()
+const dealerCardOne = currentDeck.cards.pop()
+const playerCardTwo = currentDeck.cards.pop()
+const dealerCardTwo = currentDeck.cards.pop()
+
 
 
 /*----- cached elements  -----*/
@@ -60,7 +79,7 @@ submitter.addEventListener('click', function(){
     let balanceUpdater = deposit.value
     if(!isNaN(deposit.value)) {
         let balanceInt = parseInt(balanceUpdater)
-        if(balanceInt < 5000) {
+        if(balanceInt <= 5000) {
             balance += balanceInt
         }
     }
@@ -74,24 +93,6 @@ submitter.addEventListener('click', function(){
 function playBlackJack() {
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /*----- functions -----*/
@@ -121,43 +122,80 @@ function renderCard(card) {
 // function in charge of initializing/starting the game
 
 function startHand() {
-    deckCreator = makeDeck()
-    currentDeck = new Deck(deckCreator)
-
-    currentDeck.shuffleCards()
-
-    const playerCardOne = currentDeck.cards.pop()
-    const dealerCardOne = currentDeck.cards.pop()
-    const playerCardTwo = currentDeck.cards.pop()
-    const dealerCardTwo = currentDeck.cards.pop()
 
     playerSection.appendChild(renderCard(playerCardOne))
     dealerSection.appendChild(renderCard(dealerCardOne))
     playerSection.appendChild(renderCard(playerCardTwo))
     dealerSection.appendChild(renderCard(dealerCardTwo)) //THIS CARD NEEDS TO BE HIDDEN
 
-    return currentDeck
+    return currentDeck, playerCardOne, playerCardTwo, dealerCardOne, dealerCardTwo
 }
 
 // function in charge of placing bet
 
 function placeBet() {
     placeTheBet.addEventListener('click', function(){
-        if(betSize.value > balance) {
-            betSize.value = ''
+        if(betSizeInput.value > balance) {
+            betSizeInput.value = ''
             return
         }
         else {
-            betAmount = betSize.value
+            betAmount = betSizeInput.value
             balance -= betAmount
             newBalance.innerText = `${balance}`
+            betAmountEl.innerText = `${betAmount}`
         }
-        betSize.value = ''
+        betSizeInput.value = ''
         return betAmount, balance
     })
 }
-// function in charge of assessing each cards numerical value
-// function in charge of assessing the player/dealer hand value, records busts and blackjacks too
+// function in charge of assessing each cards numerical value, and scoring it
+function scoreHand(cardOne, cardTwo, val) {
+    if (cardOne.value === 'A' && cardTwo.value === 'A') {
+        val = 12
+    }
+
+    if (cardOne.value === 'J' || cardOne.value === 'Q'|| cardOne.value === 'K'){
+        val += 10
+    }
+    else if (cardOne.value <= 10) {
+        val += parseInt(cardOne.value)
+    }
+    else {
+        if ((parseInt(cardTwo.value) + 11) > 21) {
+            val ++
+        }
+        else {
+            val += 11
+        }
+    }
+
+    if (cardTwo.value === 'J' || cardTwo.value === 'Q'|| cardTwo.value === 'K'){
+        val += 10
+    }
+    else if (cardTwo.value <= 10) {
+        val += parseInt(cardTwo.value)
+    }
+    else {
+        if ((parseInt(cardOne.value) + 11) > 21) {
+            val ++
+        }
+        else {
+            val += 11
+        }
+    }
+    return val
+}
+// this function checks for blackjacks
+function checkForBlackJack(currentHandValue, dealerHandValue) {
+    if (currentHandValue === 21) {
+        return playerHasBlackJack = true
+        
+    }
+    if (dealerHandValue === 21) {
+        return dealerHasBlackJack = true
+    }
+}
 // function in charge of responding to a "hit"
 // function in charge of responding to "double down"
 // function in charge of hiding dealer's card, as well as playing out the rest of his hand
@@ -168,3 +206,13 @@ function placeBet() {
 
 startHand()
 placeBet()
+playerHandScore.innerText = scoreHand(playerCardOne, playerCardTwo, currentHandValue, playerHasBlackJack)
+dealerHandScore.innerText = scoreHand(dealerCardOne, dealerCardTwo, dealerHandValue, dealerHasBlackJack)
+
+currentHandValue = parseInt(playerHandScore.innerText)
+dealerHandValue = parseInt(dealerHandScore.innerText)
+checkForBlackJack(currentHandValue, dealerHandValue)
+
+
+
+
