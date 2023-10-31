@@ -329,41 +329,7 @@ function stand() {
             return
         }
         playerHasStood = true
-
-        while (dealerHandValue < 17) {
-            let newDealerCard = currentDeck.cards.pop()
-            dealerSection.appendChild(renderCard(newDealerCard))
-            if (newDealerCard.value === 'J' || newDealerCard.value === 'Q'|| newDealerCard.value === 'K') {
-                dealerHandValue += 10
-            }
-            else if (newDealerCard.value === 'A') {
-                if (dealerHandValue <=10) {
-                    dealerHandValue += 11
-                }
-                else {
-                    dealerHandValue ++
-                }
-            }
-            else {
-                dealerHandValue += parseInt(newDealerCard.value)
-            }
-
-            if (dealerHandValue > 21 && dealerHasAce === true) {
-                dealerHandValue -= 10
-                dealerHasAce = null
-            }
-
-            if (dealerHandValue <= 21) {
-                dealerHandScore.innerText = dealerHandValue
-                if (dealerHandValue >= 17){
-                    return dealerHandValue
-                }
-            }
-            else {
-                dealerHandScore.innerText = dealerHandValue
-                return dealerHandValue, dealerBusted = true
-            }
-        }
+        dealerDraw()
     })
 }
 // function in charge of responding to "double down"
@@ -403,6 +369,9 @@ function doubleDown() {
             currentHandValue -= 10
             playerHasAce = null
         }
+
+        dealerDraw()
+
         // deal with bust scenarios
         if (currentHandValue > 21) {
             playerHandScore.innerText = currentHandValue
@@ -419,6 +388,42 @@ function doubleDown() {
     })
 }
 // function in charge of hiding dealer's card, as well as playing out the rest of his hand
+function dealerDraw() {
+    while (dealerHandValue < 17) {
+        let newDealerCard = currentDeck.cards.pop()
+        dealerSection.appendChild(renderCard(newDealerCard))
+        if (newDealerCard.value === 'J' || newDealerCard.value === 'Q'|| newDealerCard.value === 'K') {
+            dealerHandValue += 10
+        }
+        else if (newDealerCard.value === 'A') {
+            if (dealerHandValue <=10) {
+                dealerHandValue += 11
+            }
+            else {
+                dealerHandValue ++
+            }
+        }
+        else {
+            dealerHandValue += parseInt(newDealerCard.value)
+        }
+
+        if (dealerHandValue > 21 && dealerHasAce === true) {
+            dealerHandValue -= 10
+            dealerHasAce = null
+        }
+
+        if (dealerHandValue <= 21) {
+            dealerHandScore.innerText = dealerHandValue
+            if (dealerHandValue >= 17){
+                return dealerHandValue
+            }
+        }
+        else {
+            dealerHandScore.innerText = dealerHandValue
+            return dealerHandValue, dealerBusted = true
+        }
+    }
+}
 // function in charge of determining winner
 function determineWinner() {
     if (playerBusted === true) {
