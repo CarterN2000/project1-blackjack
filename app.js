@@ -24,6 +24,7 @@ const dealerHandScore = document.getElementById('dealer-value')
 
 const hitButton = document.getElementById('hit')
 const standButton = document.getElementById('stand')
+const doubleDownButton = document.getElementById('double')
 
 class Deck {
     constructor(cards) {
@@ -60,6 +61,10 @@ let playerHasAce = null
 let dealerHasAce = null
 let playerWonHand = null
 let handIsPush = null
+let hasDoubledDown = false
+let playerBusted = false
+let dealerBusted = false
+let playerHasStood = false
 
 
 const deckCreator = makeDeck()
@@ -94,8 +99,6 @@ function playBlackJack() {
     if (betAmount === 0) {
         placeBet()
     }
-    console.log(balance)
-    console.log(betAmount)
 
     startHand()
     playerHandScore.innerText = scoreHand(playerCardOne, playerCardTwo, currentHandValue)
@@ -132,14 +135,14 @@ function playBlackJack() {
     
     
     hit(currentHandValue)
+
     stand(dealerHandValue)
-    
-    console.log(playerHasAce)
-    console.log(dealerHasAce)
-    
 
+    doubleDown(currentHandValue)
 
-
+    if(playerBusted === true || playerHasStood === true){
+        determineWinner()
+    }
 
 
 
@@ -285,7 +288,6 @@ function scoreHand(cardOne, cardTwo, val) {
 function checkForBlackJack(currentHandValue, dealerHandValue) {
     if (currentHandValue === 21) {
         return playerHasBlackJack = true
-        
     }
     if (dealerHandValue === 21) {
         return dealerHasBlackJack = true
@@ -296,7 +298,7 @@ function checkForBlackJack(currentHandValue, dealerHandValue) {
 function hit(currentHandValue) {
     hitButton.addEventListener('click', function(){
         // checks for reason to make click useless
-        if (playerHasBlackJack === true) {
+        if (playerHasBlackJack === true || hasDoubledDown === true) {
             return
         }
         else if (currentHandValue >=21) {
@@ -330,11 +332,11 @@ function hit(currentHandValue) {
         }
 
         // RARE OCCURANCE, LATER ON DEAL WITH IF A PLAYER HAS TWO ACES, THIS WILL SUCK
-
+        
         // deal with bust scenarios
         if (currentHandValue > 21) {
-            playerWonHand === false
-            playerHandScore.innerText = 'Bust!'
+            playerHandScore.innerText = currentHandValue
+            return currentHandValue, playerBusted = true
             // show dealer second card
             //reset game
         }
@@ -345,7 +347,6 @@ function hit(currentHandValue) {
         }
         else {
             playerHandScore.innerText = currentHandValue
-            console.log(currentHandValue)
             return currentHandValue
         }
     })
@@ -354,6 +355,11 @@ function hit(currentHandValue) {
 // function in charge of standing then running dealer cards
 function stand(dealerHandValue) {
     standButton.addEventListener('click', function(){
+        if (playerBusted === true){
+            return
+        }
+        playerHasStood = true
+
         while (dealerHandValue < 17) {
             let newDealerCard = currentDeck.cards.pop()
             dealerSection.appendChild(renderCard(newDealerCard))
@@ -374,16 +380,118 @@ function stand(dealerHandValue) {
 
             if (dealerHandValue <= 21) {
                 dealerHandScore.innerText = dealerHandValue
+                return dealerHandValue
             }
             else {
-                dealerHandScore.innerText = 'Bust!'
+                dealerHandScore.innerText = dealerHandValue
+                return dealerHandValue, dealerBusted = true
             }
         }
     })
 }
 // function in charge of responding to "double down"
+function doubleDown(currentHandValue) {
+    doubleDownButton.addEventListener('click', function(){
+        // check if player has already doubled down
+        if (hasDoubledDown === true){
+            return
+        }
+        // double the bets size and reduce balance properly
+        balance -= betAmount
+        betAmount = (2 * betAmount)
+        newBalance.innerText = `${balance}`
+        betAmountEl.innerText = `${betAmount}`
+
+        // draw one card from deck
+        let doubleDownCard = currentDeck.cards.pop()
+        playerSection.appendChild(renderCard(doubleDownCard))
+
+        // score the card
+        if (doubleDownCard.value === 'J' || doubleDownCard.value === 'Q'|| doubleDownCard.value === 'K') {
+            currentHandValue += 10
+        }
+        else if (doubleDownCard.value === 'A') {
+            if (currentHandValue <=10) {
+                currentHandValue += 11
+            }
+            else {
+                currentHandValue ++
+            }
+        }
+        else {
+            currentHandValue += parseInt(doubleDownCard.value)
+        }
+        // adjust for previous aces
+        if (currentHandValue > 21 && playerHasAce === true) {
+            currentHandValue -= 10
+            playerHasAce = null
+        }
+        // deal with bust scenarios
+        if (currentHandValue > 21) {
+            playerWonHand === false
+            playerHandScore.innerText = currentHandValue
+            return currentHandValue, hasDoubledDown = true, playerBusted = true
+        }
+        else if (currentHandValue === 21) {
+            playerHandScore.innerText = currentHandValue
+            return currentHandValue, hasDoubledDown = true
+        }
+        else {
+            playerHandScore.innerText = currentHandValue
+            return currentHandValue, hasDoubledDown = true
+        }
+    })
+}
 // function in charge of hiding dealer's card, as well as playing out the rest of his hand
 // function in charge of determining winner
+function determineWinner() {
+    if (playerBusted === true) {
+        playerLost()
+    }
+    else if (dealerBusted === true) {
+        playerWon()
+    }
+    else if (currentHandValue > dealerHandValue) {
+        playerWon()
+    }
+    else if (dealerHandValue > currentHandValue) {
+        playerLost()
+    }
+    else if (currentHandValue === dealerHandValue) {
+        playerPush()
+    }
+    return console.log(balance, betAmount)
+}
+
+// function that disperses winnings and resets bets/adjusts balance
+function playerWon(){
+    if (playerHasBlackJack === true) {
+        balance = balance + (2.5 * betAmount)
+    }
+    else {
+        balance = balance + (2 * betAmount)
+    }
+    newBalance.innerText = `${balance}`
+    betAmountEl.innerText = 0
+    betAmount = 0
+    return betAmount, balance
+}
+
+// function for when player loses: reset bet and adjust balance
+function playerLost(){
+    betAmount = 0
+    betAmount.innerText = 0
+    return betAmount
+}
+
+// function handles a player/dealer push
+function playerPush(){
+    balance = balance + betAmount
+    newBalance.innerText = `${balance}`
+    betAmountEl.innerText = 0
+    betAmount = 0
+    return betAmount, balance
+}
 // function to quit/resets
 function resetHand() {
     playerHandScore.innerText = 0
