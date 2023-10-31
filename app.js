@@ -29,6 +29,11 @@ const doubleDownButton = document.getElementById('double')
 const dealCardsButton = document.getElementById('deal-cards')
 const nextHandButton = document.getElementById('reset')
 
+const playerTitle = document.createElement('h4')
+playerTitle.innerText = "Player's Cards"
+const dealerTitle =document.createElement('h4')
+dealerTitle.innerText = "Dealer's Cards"
+
 class Deck {
     constructor(cards) {
         this.cards = cards
@@ -69,21 +74,15 @@ let dealerBusted = false
 let playerHasStood = false
 let cardsWereDealt = false
 
-
+let currentDeck = null
+let playerCardOne = null
+let playerCardTwo = null
+let dealerCardOne = null
+let dealerCardTwo = null
 
 
 /*----- cached elements  -----*/
 
-
-let deckCreator = makeDeck()
-let currentDeck = new Deck(deckCreator)
-
-currentDeck.shuffleCards()
-
-let playerCardOne = currentDeck.cards.pop()
-let dealerCardOne = currentDeck.cards.pop()
-let playerCardTwo = currentDeck.cards.pop()
-let dealerCardTwo = currentDeck.cards.pop()
 
 /*----- event listeners -----*/
 
@@ -99,7 +98,7 @@ function playBlackJack() {
 
     dealCardsButton.addEventListener('click', function(){
           //first, ensure that before cards are shown, the player has a balance higher than 0
-        if (cardsWereDealt === true) {
+        if (betAmount === 0 || cardsWereDealt === true) {
             return
         }
     
@@ -138,13 +137,17 @@ function playBlackJack() {
         if (dealerCardOne.value === 'A' || dealerCardTwo.value === 'A') {
             dealerHasAce = true
         }
-        
-        hit()
-        stand()
-        doubleDown()
-
-        
     })
+
+    hit()
+    stand()
+    doubleDown()
+
+    nextHandButton.addEventListener('click', function(){
+        resetHand()
+        initializeDeck()
+    })
+
 }
 
 /*----- functions -----*/
@@ -271,9 +274,11 @@ function hit() {
         if (playerHasBlackJack === true || hasDoubledDown === true || playerHasStood === true) {
             return
         }
-        else if (currentHandValue >=21) {
+        else if (currentHandValue >=21 || cardsWereDealt=== false) {
             return
         }
+
+        playerHasHit = true
 
         // create and render new card
         let newPlayerCard = currentDeck.cards.pop()
@@ -306,18 +311,17 @@ function hit() {
         // deal with bust scenarios
         if (currentHandValue > 21) {
             playerHandScore.innerText = currentHandValue
-            return currentHandValue, playerBusted = true, playerHasHit = true
+            playerBusted = true
+            determineWinner()
             // show dealer second card
             //reset game
         }
         else if (currentHandValue === 21) {
 
             playerHandScore.innerText = currentHandValue
-            return currentHandValue, playerHasHit = true
         }
         else {
             playerHandScore.innerText = currentHandValue
-            return currentHandValue, playerHasHit = true
         }
     })
     
@@ -325,20 +329,24 @@ function hit() {
 // function in charge of standing then running dealer cards
 function stand() {
     standButton.addEventListener('click', function(){
-        if (playerBusted === true){
+        if (playerBusted === true || cardsWereDealt=== false){
             return
         }
         playerHasStood = true
         dealerDraw()
+        determineWinner()
     })
 }
 // function in charge of responding to "double down"
 function doubleDown() {
     doubleDownButton.addEventListener('click', function(){
         // check if player has already doubled down
-        if (hasDoubledDown === true || playerHasHit === true || playerHasStood === true){
+        if (hasDoubledDown === true || playerHasHit === true || playerHasStood === true || cardsWereDealt=== false){
             return
         }
+
+        hasDoubledDown = true
+
         // double the bets size and reduce balance properly
         balance -= betAmount
         betAmount = (2 * betAmount)
@@ -375,16 +383,15 @@ function doubleDown() {
         // deal with bust scenarios
         if (currentHandValue > 21) {
             playerHandScore.innerText = currentHandValue
-            return currentHandValue, hasDoubledDown = true, playerBusted = true
+            playerBusted = true
         }
         else if (currentHandValue === 21) {
             playerHandScore.innerText = currentHandValue
-            return currentHandValue, hasDoubledDown = true
         }
         else {
             playerHandScore.innerText = currentHandValue
-            return currentHandValue, hasDoubledDown = true
         }
+        determineWinner()
     })
 }
 // function in charge of hiding dealer's card, as well as playing out the rest of his hand
@@ -441,7 +448,7 @@ function determineWinner() {
     else if (currentHandValue === dealerHandValue) {
         playerPush()
     }
-    return console.log(balance, betAmount)
+    return balance, betAmount
 }
 
 // function that disperses winnings and resets bets/adjusts balance
@@ -477,12 +484,28 @@ function playerPush(){
 function resetHand() {
     playerHandScore.innerText = 0
     dealerHandScore.innerText = 0
+    playerHasBlackJack = false
+    dealerHasBlackJack = false
+    playerHasAce = null
+    dealerHasAce = null
+    hasDoubledDown = false
+    playerHasHit= false
+    playerBusted = false
+    dealerBusted = false
+    playerHasStood = false
+    cardsWereDealt = false
     currentHandValue = 0
     dealerHandValue = 0
+
     playerSection.replaceChildren()
     dealerSection.replaceChildren()
 
-    deckCreator = makeDeck()
+    playerSection.appendChild(playerTitle)
+    dealerSection.appendChild(dealerTitle)
+}
+// function that initializes the start of a game
+function initializeDeck() {
+    let deckCreator = makeDeck()
     currentDeck = new Deck(deckCreator)
 
     currentDeck.shuffleCards()
@@ -491,18 +514,18 @@ function resetHand() {
     dealerCardOne = currentDeck.cards.pop()
     playerCardTwo = currentDeck.cards.pop()
     dealerCardTwo = currentDeck.cards.pop()
-
-    return currentHandValue
 }
-// There will probably be more... AGGGHHHH
 
+
+initializeDeck()
 playBlackJack()
 
 
 //NOTES FOR WEDNESDAY
-// figure out how to run determine winner
+
 // figured out how to properly run messages in middle
-// figure out how to run another hand
+// Hide dealer card
+// Add timers
 
 
 
