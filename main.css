@@ -53,6 +53,27 @@ body {
     display: flex;
     justify-content: center;
 }
+#deal-cards {
+    height: 75%;
+    width: 150px;
+    background-color: aqua;
+    border: 2px solid black;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: large;
+    margin-right: 20px;
+}
+
+#reset {
+    height: 75%;
+    width: 150px;
+    background-color: red;
+    border: 2px solid black;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: large;
+    margin-left: 20px;
+}
 
 #player-choices{
     height: 100px;
@@ -88,3 +109,4 @@ body {
     margin: 0;
     margin-bottom: 3px;
 }
+

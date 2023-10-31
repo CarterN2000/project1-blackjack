@@ -21,10 +21,13 @@ const betAmountEl = document.getElementById('bet-amount')
 
 const playerHandScore = document.getElementById('hand-value')
 const dealerHandScore = document.getElementById('dealer-value')
+const announcerEl = document.getElementsByClassName('announcer')
 
 const hitButton = document.getElementById('hit')
 const standButton = document.getElementById('stand')
 const doubleDownButton = document.getElementById('double')
+const dealCardsButton = document.getElementById('deal-cards')
+const nextHandButton = document.getElementById('reset')
 
 class Deck {
     constructor(cards) {
@@ -59,30 +62,28 @@ let playerHasBlackJack = false
 let dealerHasBlackJack = false
 let playerHasAce = null
 let dealerHasAce = null
-let playerWonHand = null
-let handIsPush = null
 let hasDoubledDown = false
+let playerHasHit= false
 let playerBusted = false
 let dealerBusted = false
 let playerHasStood = false
+let cardsWereDealt = false
 
-
-const deckCreator = makeDeck()
-const currentDeck = new Deck(deckCreator)
-
-currentDeck.shuffleCards()
-
-const playerCardOne = currentDeck.cards.pop()
-const dealerCardOne = currentDeck.cards.pop()
-const playerCardTwo = currentDeck.cards.pop()
-const dealerCardTwo = currentDeck.cards.pop()
 
 
 
 /*----- cached elements  -----*/
 
-// I will store all the button elements here
-// All varibles in charge of getting user inputs are here
+
+let deckCreator = makeDeck()
+let currentDeck = new Deck(deckCreator)
+
+currentDeck.shuffleCards()
+
+let playerCardOne = currentDeck.cards.pop()
+let dealerCardOne = currentDeck.cards.pop()
+let playerCardTwo = currentDeck.cards.pop()
+let dealerCardTwo = currentDeck.cards.pop()
 
 /*----- event listeners -----*/
 
@@ -92,89 +93,59 @@ const dealerCardTwo = currentDeck.cards.pop()
 
 function playBlackJack() {
 
-    //first, ensure that before cards are shown, the player has a balance higher than 0
-    if (balance === 0) {
-        balanceSetter()
-    }
-    if (betAmount === 0) {
-        placeBet()
-    }
+  
+    placeBet()
+    balanceSetter()
 
-    startHand()
-    playerHandScore.innerText = scoreHand(playerCardOne, playerCardTwo, currentHandValue)
-    dealerHandScore.innerText = scoreHand(dealerCardOne, dealerCardTwo, dealerHandValue)
+    dealCardsButton.addEventListener('click', function(){
+          //first, ensure that before cards are shown, the player has a balance higher than 0
+        if (cardsWereDealt === true) {
+            return
+        }
     
-    currentHandValue = parseInt(playerHandScore.innerText)
-    dealerHandValue = parseInt(dealerHandScore.innerText)
-    checkForBlackJack(currentHandValue, dealerHandValue)
-    
-    // This below consitional will determine who wins the hand in all blackjack senarios, and react accordiingly
-    if (playerHasBlackJack === true && dealerHasBlackJack === false) {
-        playerWonHand = true
-        // pay player 1.25x the bet
-        // reset game
-    }
-    else if (playerHasBlackJack === false && dealerHasBlackJack === true) {
-        playerWonHand === false
-        // flip over dealer second card to reveal blackjack
-        // reset game 
-    }
-    else if (playerHasBlackJack === true && dealerHasBlackJack === true) {
-        handIsPush === true
-        // flip over dealer second card to reveal blackjack
-        // pay back player's initial bet only
-        // reset game
-    }
-    
-    if (playerCardOne.value === 'A' || playerCardTwo.value === 'A') {
-        playerHasAce = true
-    }
-    if (dealerCardOne.value === 'A' || dealerCardTwo.value === 'A') {
-        dealerHasAce = true
-    }
-    
-    
-    hit(currentHandValue)
+        startHand()
+        playerHandScore.innerText = scoreHand(playerCardOne, playerCardTwo, currentHandValue)
+        dealerHandScore.innerText = scoreHand(dealerCardOne, dealerCardTwo, dealerHandValue)
 
-    stand(dealerHandValue)
+        // ensures user cannot spam "deal cards" button
+        cardsWereDealt = true
+        
+        currentHandValue = parseInt(playerHandScore.innerText)
+        dealerHandValue = parseInt(dealerHandScore.innerText)
+        checkForBlackJack(currentHandValue, dealerHandValue)
+        
+        // This below consitional will determine who wins the hand in all blackjack senarios, and react accordiingly
+        if (playerHasBlackJack === true && dealerHasBlackJack === false) {
+            playerWon()
+            // pay player 1.25x the bet
+            // reset game
+        }
+        else if (playerHasBlackJack === false && dealerHasBlackJack === true) {
+            playerLost()
+            // flip over dealer second card to reveal blackjack
+            // reset game 
+        }
+        else if (playerHasBlackJack === true && dealerHasBlackJack === true) {
+            playerPush()
+            // flip over dealer second card to reveal blackjack
+            // pay back player's initial bet only
+            // reset game
+        }
+        
+        if (playerCardOne.value === 'A' || playerCardTwo.value === 'A') {
+            playerHasAce = true
+        }
+        if (dealerCardOne.value === 'A' || dealerCardTwo.value === 'A') {
+            dealerHasAce = true
+        }
+        
+        hit()
+        stand()
+        doubleDown()
 
-    doubleDown(currentHandValue)
-
-    if(playerBusted === true || playerHasStood === true){
-        determineWinner()
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        
+    })
 }
-
 
 /*----- functions -----*/
 
@@ -203,7 +174,6 @@ function renderCard(card) {
 
 // function in charge of initializing/starting the game
 function startHand() {
-
     playerSection.appendChild(renderCard(playerCardOne))
     dealerSection.appendChild(renderCard(dealerCardOne))
     playerSection.appendChild(renderCard(playerCardTwo))
@@ -295,10 +265,10 @@ function checkForBlackJack(currentHandValue, dealerHandValue) {
 }
 
 // function in charge of responding to a "hit"
-function hit(currentHandValue) {
+function hit() {
     hitButton.addEventListener('click', function(){
         // checks for reason to make click useless
-        if (playerHasBlackJack === true || hasDoubledDown === true) {
+        if (playerHasBlackJack === true || hasDoubledDown === true || playerHasStood === true) {
             return
         }
         else if (currentHandValue >=21) {
@@ -336,24 +306,24 @@ function hit(currentHandValue) {
         // deal with bust scenarios
         if (currentHandValue > 21) {
             playerHandScore.innerText = currentHandValue
-            return currentHandValue, playerBusted = true
+            return currentHandValue, playerBusted = true, playerHasHit = true
             // show dealer second card
             //reset game
         }
         else if (currentHandValue === 21) {
 
             playerHandScore.innerText = currentHandValue
-            return currentHandValue
+            return currentHandValue, playerHasHit = true
         }
         else {
             playerHandScore.innerText = currentHandValue
-            return currentHandValue
+            return currentHandValue, playerHasHit = true
         }
     })
     
 }
 // function in charge of standing then running dealer cards
-function stand(dealerHandValue) {
+function stand() {
     standButton.addEventListener('click', function(){
         if (playerBusted === true){
             return
@@ -378,9 +348,16 @@ function stand(dealerHandValue) {
                 dealerHandValue += parseInt(newDealerCard.value)
             }
 
+            if (dealerHandValue > 21 && dealerHasAce === true) {
+                dealerHandValue -= 10
+                dealerHasAce = null
+            }
+
             if (dealerHandValue <= 21) {
                 dealerHandScore.innerText = dealerHandValue
-                return dealerHandValue
+                if (dealerHandValue >= 17){
+                    return dealerHandValue
+                }
             }
             else {
                 dealerHandScore.innerText = dealerHandValue
@@ -390,10 +367,10 @@ function stand(dealerHandValue) {
     })
 }
 // function in charge of responding to "double down"
-function doubleDown(currentHandValue) {
+function doubleDown() {
     doubleDownButton.addEventListener('click', function(){
         // check if player has already doubled down
-        if (hasDoubledDown === true){
+        if (hasDoubledDown === true || playerHasHit === true || playerHasStood === true){
             return
         }
         // double the bets size and reduce balance properly
@@ -428,7 +405,6 @@ function doubleDown(currentHandValue) {
         }
         // deal with bust scenarios
         if (currentHandValue > 21) {
-            playerWonHand === false
             playerHandScore.innerText = currentHandValue
             return currentHandValue, hasDoubledDown = true, playerBusted = true
         }
@@ -497,8 +473,19 @@ function resetHand() {
     playerHandScore.innerText = 0
     dealerHandScore.innerText = 0
     currentHandValue = 0
+    dealerHandValue = 0
     playerSection.replaceChildren()
     dealerSection.replaceChildren()
+
+    deckCreator = makeDeck()
+    currentDeck = new Deck(deckCreator)
+
+    currentDeck.shuffleCards()
+
+    playerCardOne = currentDeck.cards.pop()
+    dealerCardOne = currentDeck.cards.pop()
+    playerCardTwo = currentDeck.cards.pop()
+    dealerCardTwo = currentDeck.cards.pop()
 
     return currentHandValue
 }
@@ -507,7 +494,10 @@ function resetHand() {
 playBlackJack()
 
 
-
+//NOTES FOR WEDNESDAY
+// figure out how to run determine winner
+// figured out how to properly run messages in middle
+// figure out how to run another hand
 
 
 
@@ -533,3 +523,6 @@ playBlackJack()
 //     deposit.value = ''
 //     newBalance.innerText = `${balance}`
 // })
+
+
+// If a use the event listeners as functions
