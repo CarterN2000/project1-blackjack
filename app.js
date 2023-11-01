@@ -1,8 +1,4 @@
 
-
-// PSEUDOCODE FOR PROJECT HERE
-
-
 /*----- constants -----*/
 
 const SUITS = ["♠", "♣", "♥", "♦"]
