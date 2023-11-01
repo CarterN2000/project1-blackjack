@@ -517,6 +517,7 @@ function resetHand() {
     playerHasStood = false
     cardsWereDealt = false
     thereIsWinner = false
+    alreadyPlacedBet = false
     currentHandValue = 0
     dealerHandValue = 0
 
