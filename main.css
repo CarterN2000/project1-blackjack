@@ -4,6 +4,9 @@
 
 body {
     background-color: rgb(161, 220, 168);
+    /* background-image: url('blackjack-background.jpeg'); */
+    /* background-size: cover;  */
+    /* color: white; */
 }
 
 #dealer-cards {
@@ -72,13 +75,15 @@ body {
 #deal-cards {
     height: 75%;
     width: 150px;
-    background-color: aqua;
     border: 2px solid black;
+    background-color: aqua;
     border-radius: 10px;
     cursor: pointer;
     font-size: large;
     margin-right: 20px;
+    transition: .2s ease-out;
 }
+
 
 
 #reset {
@@ -90,7 +95,9 @@ body {
     cursor: pointer;
     font-size: large;
     margin-left: 20px;
+    transition: .2s ease-out;
 }
+
 
 #player-choices{
     height: 100px;
