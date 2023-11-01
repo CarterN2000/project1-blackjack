@@ -108,6 +108,12 @@ body {
     border: 2px solid black;
     border-radius: 10px;
     cursor: pointer;
+    transition: .2s ease-out;
+}
+
+.choice:hover {
+    background-color: rgb(166, 57, 166);
+    color: white
 }
 
 #stats-list {
