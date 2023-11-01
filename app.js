@@ -73,12 +73,15 @@ let playerBusted = false
 let dealerBusted = false
 let playerHasStood = false
 let cardsWereDealt = false
+let thereIsWinner = false
+let alreadyPlacedBet = false
 
 let currentDeck = null
 let playerCardOne = null
 let playerCardTwo = null
 let dealerCardOne = null
 let dealerCardTwo = null
+let backCardEl = null
 
 
 /*----- cached elements  -----*/
@@ -104,31 +107,31 @@ function playBlackJack() {
     
         startHand()
         playerHandScore.innerText = scoreHand(playerCardOne, playerCardTwo, currentHandValue)
-        dealerHandScore.innerText = scoreHand(dealerCardOne, dealerCardTwo, dealerHandValue)
+        dealerHandValue = scoreHand(dealerCardOne, dealerCardTwo, dealerHandValue)
 
         // ensures user cannot spam "deal cards" button
         cardsWereDealt = true
         
         currentHandValue = parseInt(playerHandScore.innerText)
-        dealerHandValue = parseInt(dealerHandScore.innerText)
         checkForBlackJack(currentHandValue, dealerHandValue)
         
         // This below consitional will determine who wins the hand in all blackjack senarios, and react accordiingly
         if (playerHasBlackJack === true && dealerHasBlackJack === false) {
-            playerWon()
-            // pay player 1.25x the bet
-            // reset game
+            determineWinner()
+            showSecondCard()
+            betAmountEl.innerText = 'BlackJack!!! You win!'
         }
         else if (playerHasBlackJack === false && dealerHasBlackJack === true) {
-            playerLost()
+            determineWinner()
+            showSecondCard()
+            betAmountEl.innerText = 'Dealer BlackJack! House wins!'
             // flip over dealer second card to reveal blackjack
-            // reset game 
         }
         else if (playerHasBlackJack === true && dealerHasBlackJack === true) {
-            playerPush()
+            determineWinner()
+            showSecondCard()
+            betAmountEl.innerText = 'You and the dealer both had BlackJack, its a push'
             // flip over dealer second card to reveal blackjack
-            // pay back player's initial bet only
-            // reset game
         }
         
         if (playerCardOne.value === 'A' || playerCardTwo.value === 'A') {
@@ -144,10 +147,12 @@ function playBlackJack() {
     doubleDown()
 
     nextHandButton.addEventListener('click', function(){
+        if (thereIsWinner === false) {
+            return
+        }
         resetHand()
         initializeDeck()
     })
-
 }
 
 /*----- functions -----*/
@@ -172,7 +177,15 @@ function renderCard(card) {
     else {
         newCard.style.color = 'red'
     }
-    return(newCard)
+    return newCard
+}
+
+// function that renders the back of the playing card
+function renderTheBack(){
+    const backOfCard = document.createElement('div')
+    backOfCard.innerText = 'Dis da back of da card'
+    backOfCard.classList.add('back-of-card')
+    return backOfCard
 }
 
 // function in charge of initializing/starting the game
@@ -180,9 +193,9 @@ function startHand() {
     playerSection.appendChild(renderCard(playerCardOne))
     dealerSection.appendChild(renderCard(dealerCardOne))
     playerSection.appendChild(renderCard(playerCardTwo))
-    dealerSection.appendChild(renderCard(dealerCardTwo)) //THIS CARD NEEDS TO BE HIDDEN
-
-    return currentDeck, playerCardOne, playerCardTwo, dealerCardOne, dealerCardTwo
+    backCardEl = renderTheBack()
+    dealerSection.appendChild(backCardEl) //THIS CARD NEEDS TO BE HIDDEN
+    
 }
 // function in charge of setting inital player balance 
 function balanceSetter() {
@@ -203,6 +216,10 @@ function balanceSetter() {
 
 function placeBet() {
     placeTheBet.addEventListener('click', function(){
+        if (alreadyPlacedBet === true){
+            betSizeInput.value = ''
+            return
+        }
         if(betSizeInput.value > balance) {
             betSizeInput.value = ''
             return
@@ -211,8 +228,9 @@ function placeBet() {
             betAmount = betSizeInput.value
             balance -= betAmount
             newBalance.innerText = `${balance}`
-            betAmountEl.innerText = `${betAmount}`
+            betAmountEl.innerText = `Current Bet: ${betAmount}`
         }
+        alreadyPlacedBet = true
         betSizeInput.value = ''
         return betAmount, balance
     })
@@ -351,7 +369,7 @@ function doubleDown() {
         balance -= betAmount
         betAmount = (2 * betAmount)
         newBalance.innerText = `${balance}`
-        betAmountEl.innerText = `${betAmount}`
+        betAmountEl.innerText = `Current Bet: ${betAmount}`
 
         // draw one card from deck
         let doubleDownCard = currentDeck.cards.pop()
@@ -396,6 +414,7 @@ function doubleDown() {
 }
 // function in charge of hiding dealer's card, as well as playing out the rest of his hand
 function dealerDraw() {
+    showSecondCard()
     while (dealerHandValue < 17) {
         let newDealerCard = currentDeck.cards.pop()
         dealerSection.appendChild(renderCard(newDealerCard))
@@ -433,22 +452,28 @@ function dealerDraw() {
 }
 // function in charge of determining winner
 function determineWinner() {
+    thereIsWinner = true
     if (playerBusted === true) {
+        showSecondCard()
         playerLost()
+        betAmountEl.innerText = 'You busted! House Wins!'
     }
     else if (dealerBusted === true) {
         playerWon()
+        betAmountEl.innerText = 'Dealer Busted! You Win!'
     }
     else if (currentHandValue > dealerHandValue) {
         playerWon()
+        betAmountEl.innerText = `You beat the dealer's ${dealerHandValue} with a ${currentHandValue}`
     }
     else if (dealerHandValue > currentHandValue) {
         playerLost()
+        betAmountEl.innerText = `The dealer beat your ${currentHandValue} with a ${dealerHandValue}`
     }
     else if (currentHandValue === dealerHandValue) {
         playerPush()
+        betAmountEl.innerText = `You and the dealer both had a ${dealerHandValue}, it's a push!`
     }
-    return balance, betAmount
 }
 
 // function that disperses winnings and resets bets/adjusts balance
@@ -462,28 +487,25 @@ function playerWon(){
     newBalance.innerText = `${balance}`
     betAmountEl.innerText = 0
     betAmount = 0
-    return betAmount, balance
 }
 
 // function for when player loses: reset bet and adjust balance
 function playerLost(){
     betAmount = 0
     betAmount.innerText = 0
-    return betAmount
 }
 
 // function handles a player/dealer push
 function playerPush(){
-    balance = balance + betAmount
+    balance += parseInt(betAmount)
     newBalance.innerText = `${balance}`
     betAmountEl.innerText = 0
     betAmount = 0
-    return betAmount, balance
 }
 // function to quit/resets
 function resetHand() {
     playerHandScore.innerText = 0
-    dealerHandScore.innerText = 0
+    dealerHandScore.innerText = '???'
     playerHasBlackJack = false
     dealerHasBlackJack = false
     playerHasAce = null
@@ -494,6 +516,7 @@ function resetHand() {
     dealerBusted = false
     playerHasStood = false
     cardsWereDealt = false
+    thereIsWinner = false
     currentHandValue = 0
     dealerHandValue = 0
 
@@ -514,6 +537,14 @@ function initializeDeck() {
     dealerCardOne = currentDeck.cards.pop()
     playerCardTwo = currentDeck.cards.pop()
     dealerCardTwo = currentDeck.cards.pop()
+
+    betAmountEl.innerText = 'Place your bet and press Deal Cards to start playing!'
+}
+// turns over dealer's hidden card
+function showSecondCard() {
+    dealerSection.removeChild(backCardEl)
+    dealerSection.appendChild(renderCard(dealerCardTwo))
+    dealerHandScore.innerText = `${dealerHandValue}`
 }
 
 

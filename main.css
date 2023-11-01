@@ -27,7 +27,6 @@ body {
     padding-right: 1rem;
     gap: 1rem;
     user-select: none;
-    
 }
 
 .cards {
@@ -43,6 +42,22 @@ body {
     user-select: none;
 }
 
+.back-of-card {
+    height: 80%;
+    width: 150px;
+    display: flex;
+    background-color: rgb(166, 57, 166);
+    color: rgb(255, 255, 255);
+    border: 2px solid rgb(0, 0, 0);
+    border-radius: 8px;
+    font-size: 36px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    padding: 8px;
+}
+
 
 #main-text {
     height: 100px;
@@ -52,6 +67,7 @@ body {
     align-items: center;
     display: flex;
     justify-content: center;
+    user-select: none
 }
 #deal-cards {
     height: 75%;
@@ -63,6 +79,7 @@ body {
     font-size: large;
     margin-right: 20px;
 }
+
 
 #reset {
     height: 75%;
