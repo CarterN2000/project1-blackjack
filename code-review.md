@@ -1,0 +1,5 @@
+# Glows
+I think I am most proud of the cards themselves. With very little help from the internet, I was able to use OOP and classes to design my own cards and store information about said cards. I was also able to render them on the screen with my own simplistic design. I figured out how to have a card face down or face up based on the spot in the game. Overall I am very proud of how the cards work and they took me the longest to figure out. That being said, they still aren't perfect. Even with tecaher guidance I could not completely figure out how to make them move on the screen one at a time, so when I am better and more knowledgable in the future I would like to improve on the card rendering feature.
+
+# Grows
+After lots of testing I still have not come across any bugs, that being said I do need to get better at CSS as my design for the webpage is not great
