@@ -46,7 +46,7 @@ body {
     justify-content: center;
     align-items: center;
     user-select: none;
-    box-shadow: 4px 4px rgb(49, 48, 48);
+    box-shadow: 4px 4px 2px rgb(49, 48, 48);
 }
 
 .back-of-card {
@@ -64,7 +64,7 @@ body {
     align-items: center;
     user-select: none;
     padding: 8px;
-    box-shadow: 4px 4px rgb(49, 48, 48);
+    box-shadow: 4px 4px 2px rgb(49, 48, 48);
 }
 
 
@@ -77,7 +77,8 @@ body {
     align-items: center;
     display: flex;
     justify-content: center;
-    user-select: none
+    user-select: none;
+    border-radius: 8px;
 }
 #deal-cards {
     height: 75%;
@@ -147,6 +148,7 @@ body {
     padding: 10px;
     user-select: none;
     margin: 0;
+    border-radius: 8px;
     background-color: #2AC7DF;
 }
 
@@ -165,6 +167,7 @@ header {
     border: 2px solid black;
     text-align: center;
     width: auto;
+    border-radius: 8px;
 }
 
 .text-box {
