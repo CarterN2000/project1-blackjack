@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blackjack</title>
     <link rel="stylesheet" href="main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kavivanar&display=swap" rel="stylesheet">
     <script defer src="app.js"></script>
 </head>
 <body>
@@ -12,8 +15,8 @@
         <h1 class="header-title"> Welcome to Blackjack</h1>
         <h5 class="instruction">Deposit your chips below! (Max deposit = 5000)</h5>
         <!-- <input type="text" placeholder="Your name"> -->
-        <input type="text" id="deposit" placeholder="Deposit Amount" required>
-        <input type="submit" id="submitter" value="Add Funds">
+        <input type="text" class="text-box clickable" id="deposit" placeholder="Deposit Amount" required>
+        <input type="submit" class="balance-updater clickable" id="submitter" value="Add Funds">
     </header>
     <main>
         <section id="dealer-cards">
@@ -21,30 +24,32 @@
             <!-- <div class="cards">9♠</div> -->
         </section>
         <section id="main-text">
-            <button id="deal-cards">DEAL CARDS</button>
+            <button class="clickable" id="deal-cards">DEAL CARDS</button>
             <h2 class="announcer" id="bet-amount"></h2>
-            <button id="reset">NEXT HAND</button>
+            <button class="clickable" id="reset">NEXT HAND</button>
         </section>
         <section id="player-cards">
             <h4>Player's Cards</h4>
             <!-- <div class="cards">9♠</div> -->
         </section>
-        <section id="player-choices">
-            <button class="choice" id="hit">Hit</button>
-            <button class="choice" id="stand">Stand</button>
-            <button class="choice" id="double">Double Down</button>
-            <a href="https://youtu.be/OImr_njGizg?t=95" target="_blank">
-                <button class="choice" id="funny">Cry</button>
-            </a>
-        </section>
         <section id="stats-list">
-            <p>Current Balance: <span id="balance">0</span></p>
-            <p>Player Hand Value: <span id="hand-value">0</span></p>
-            <p>Dealer Hand Value: <span id="dealer-value">???</span></p>
-            <!-- <p>Wins: <span id="win-count">0</span></p>
-            <p>Loses: <span id="loss-count">0</span></p> -->
-            <input type="number" min="0" id="bet-size" placeholder="BET AMOUNT">
-            <input type="submit" id="place-bet" value="PLACE BET">
+            <section id="player-choices">
+                <button class="choice clickable" id="hit">Hit</button>
+                <button class="choice clickable" id="stand">Stand</button>
+                <button class="choice clickable" id="double">Double Down</button>
+                <a href="https://youtu.be/OImr_njGizg?t=95" target="_blank">
+                    <button class="choice clickable" id="funny">Cry</button>
+                </a>
+            </section>
+            <div id="stat-container">
+                <p>Current Balance: <span id="balance">0</span></p>
+                <p>Player Hand Value: <span id="hand-value">0</span></p>
+                <p>Dealer Hand Value: <span id="dealer-value">???</span></p>
+                <!-- <p>Wins: <span id="win-count">0</span></p>
+                <p>Loses: <span id="loss-count">0</span></p> -->
+                <input type="number" min="0" class="text-box clickable" id="bet-size" placeholder="BET AMOUNT">
+                <input type="submit" class="balance-updater clickable" id="place-bet" value="PLACE BET">
+            </div>
         </section>
     </main>
     
