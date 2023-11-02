@@ -286,7 +286,7 @@ function scoreHand(cardOne, cardTwo, val, TwoAces) {
 
     if (cardOne.value === 'A' && cardTwo.value === 'A') {
         val = 12
-        TwoAreAces = true
+        TwoAces = true
     }
 
     return val
@@ -385,7 +385,7 @@ function doubleDown() {
         if (hasDoubledDown === true || playerHasHit === true || playerHasStood === true || cardsWereDealt === false || dealerHasBlackJack === true) {
             return
         }
-        if ((balance + betAmount) - (2 * betAmount) < 0) {
+        if ((balance - betAmount) < 0) {
             return
         }
 
